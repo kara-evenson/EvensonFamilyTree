@@ -60,7 +60,7 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            PopulateDropDowns(person.Parent1Id, person.Parent2Id, person.FamilyTreeId);
+            PopulateDropDowns(person.FamilyTreeId, person.Parent1Id, person.Parent2Id);
             return View(person);
         }
 
@@ -72,7 +72,7 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             var person = await _context.People.FindAsync(id);
             if (person == null) return NotFound();
 
-            PopulateDropDowns(person.Parent1Id, person.Parent2Id, person.FamilyTreeId, person.Id);
+            PopulateDropDowns(person.FamilyTreeId, person.Parent1Id, person.Parent2Id, person.Id);
             return View(person);
         }
 
@@ -85,22 +85,12 @@ namespace EvensonFamilyTreeAppsDev.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(person);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await PersonExists(person.Id))
-                        return NotFound();
-
-                    throw;
-                }
+                _context.Update(person);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
 
-            PopulateDropDowns(person.Parent1Id, person.Parent2Id, person.FamilyTreeId, person.Id);
+            PopulateDropDowns(person.FamilyTreeId, person.Parent1Id, person.Parent2Id, person.Id);
             return View(person);
         }
 
@@ -135,29 +125,11 @@ namespace EvensonFamilyTreeAppsDev.Controllers
         }
 
         private void PopulateDropDowns(
+            int? selectedFamilyTree = null,
             int? selectedParent1 = null,
             int? selectedParent2 = null,
-            int? selectedFamilyTree = null,
             int? currentPersonId = null)
         {
-            var peopleQuery = _context.People
-                .AsNoTracking()
-                .OrderBy(p => p.LastName)
-                .ThenBy(p => p.FirstName)
-                .Select(p => new
-                {
-                    p.Id,
-                    FullName = p.FirstName + " " + p.LastName
-                });
-
-            if (currentPersonId.HasValue)
-            {
-                peopleQuery = peopleQuery.Where(p => p.Id != currentPersonId.Value);
-            }
-
-            ViewBag.Parent1Id = new SelectList(peopleQuery.ToList(), "Id", "FullName", selectedParent1);
-            ViewBag.Parent2Id = new SelectList(peopleQuery.ToList(), "Id", "FullName", selectedParent2);
-
             ViewBag.FamilyTreeId = new SelectList(
                 _context.FamilyTrees
                     .AsNoTracking()
@@ -166,6 +138,28 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 "Id",
                 "FamilyName",
                 selectedFamilyTree);
+
+            var peopleQuery = _context.People
+                .AsNoTracking()
+                .Where(p => p.FamilyTreeId == selectedFamilyTree);
+
+            if (currentPersonId.HasValue)
+            {
+                peopleQuery = peopleQuery.Where(p => p.Id != currentPersonId.Value);
+            }
+
+            var parentList = peopleQuery
+                .OrderBy(p => p.LastName)
+                .ThenBy(p => p.FirstName)
+                .Select(p => new
+                {
+                    p.Id,
+                    FullName = (p.FirstName ?? "") + " " + (p.LastName ?? "")
+                })
+                .ToList();
+
+            ViewBag.Parent1Id = new SelectList(parentList, "Id", "FullName", selectedParent1);
+            ViewBag.Parent2Id = new SelectList(parentList, "Id", "FullName", selectedParent2);
         }
 
         private async Task<bool> PersonExists(int id)

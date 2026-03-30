@@ -14,6 +14,7 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             _context = context;
         }
 
+        // GET: /FamilyTree
         public async Task<IActionResult> Index()
         {
             var familyTreeCount = await _context.FamilyTrees.CountAsync();
@@ -24,24 +25,13 @@ namespace EvensonFamilyTreeAppsDev.Controllers
 
             var familyTrees = await _context.FamilyTrees
                 .Include(ft => ft.Members)
+                    .ThenInclude(p => p.Parent1)
+                .Include(ft => ft.Members)
+                    .ThenInclude(p => p.Parent2)
                 .OrderBy(ft => ft.FamilyName)
                 .ToListAsync();
 
             return View(familyTrees);
         }
-
-        //// GET: /FamilyTree
-        //public async Task<IActionResult> Index()
-        //{
-        //    var familyTrees = await _context.FamilyTrees
-        //        .Include(ft => ft.Members)
-        //            .ThenInclude(p => p.Parent1)
-        //        .Include(ft => ft.Members)
-        //            .ThenInclude(p => p.Parent2)
-        //        .OrderBy(ft => ft.FamilyName)
-        //        .ToListAsync();
-
-        //    return View(familyTrees);
-        //}
     }
 }
