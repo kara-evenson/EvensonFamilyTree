@@ -1,0 +1,67 @@
+﻿@model IEnumerable<EvensonFamilyTreeAppsDev.Models.FamilyTree>
+
+@{
+    ViewData["Title"] = "Family Trees";
+}
+
+<h1>Family Trees</h1>
+
+<p>FamilyTree count: @ViewBag.FamilyTreeCount</p>
+<p>People count: @ViewBag.PeopleCount</p>
+
+@if (!Model.Any())
+{
+    <p>No family trees found.</p>
+}
+else
+{
+    @foreach (var tree in Model)
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="mb-0">@tree.FamilyName</h2>
+            </div>
+            <div class="card-body">
+                @if (tree.Members == null || !tree.Members.Any())
+                {
+                    <p>No ancestors found for this family tree.</p>
+                }
+                else
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Birth Date</th>
+                                <th>Birth Place</th>
+                                <th>Parents</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var person in tree.Members.OrderBy(p => p.LastName).ThenBy(p => p.FirstName))
+                            {
+                                <tr>
+                                    <td>
+                                        @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
+                                    </td>
+                                    <td>@person.Gender</td>
+                                    <td>@person.BirthDate?.ToString("MM/dd/yyyy")</td>
+                                    <td>@person.BirthPlace</td>
+                                    <td>
+                                        @(person.Parent1 != null ? $"{person.Parent1.FirstName} {person.Parent1.LastName}" : "")
+                                        @if (person.Parent1 != null && person.Parent2 != null)
+                                        {
+                                            <br />
+                                        }
+                                        @(person.Parent2 != null ? $"{person.Parent2.FirstName} {person.Parent2.LastName}" : "")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+}

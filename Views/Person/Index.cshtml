@@ -1,0 +1,23 @@
+﻿@model IEnumerable<EvensonFamilyTreeAppsDev.Models.Person>
+<h2>People</h2>
+<a asp-action="Create">Create New</a>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Gender</th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.FirstName @item.LastName</td>
+            <td>@item.Gender</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+</table>
+

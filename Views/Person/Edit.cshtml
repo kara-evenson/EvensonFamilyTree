@@ -1,0 +1,108 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Person
+@using EvensonFamilyTreeAppsDev.Models
+
+@{
+    ViewData["Title"] = "Edit Person";
+}
+
+<h1>Edit Ancestor</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="FamilyTreeId" class="form-label"></label>
+        <select asp-for="FamilyTreeId" asp-items="ViewBag.FamilyTreeId" class="form-select">
+            <option value="">-- Select Family Tree --</option>
+        </select>
+        <span asp-validation-for="FamilyTreeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prefix" class="form-label"></label>
+        <input asp-for="Prefix" class="form-control" />
+        <span asp-validation-for="Prefix" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Suffix" class="form-label"></label>
+        <input asp-for="Suffix" class="form-control" />
+        <span asp-validation-for="Suffix" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Gender" class="form-label"></label>
+        <select asp-for="Gender" asp-items="Html.GetEnumSelectList<GenderType>()" class="form-select">
+            <option value="">-- Select Gender --</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BirthDate" class="form-label"></label>
+        <input asp-for="BirthDate" type="date" class="form-control" />
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DeathDate" class="form-label"></label>
+        <input asp-for="DeathDate" type="date" class="form-control" />
+        <span asp-validation-for="DeathDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BirthPlace" class="form-label"></label>
+        <input asp-for="BirthPlace" class="form-control" />
+        <span asp-validation-for="BirthPlace" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="RestingPlace" class="form-label"></label>
+        <input asp-for="RestingPlace" class="form-control" />
+        <span asp-validation-for="RestingPlace" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parent1Id" class="form-label">Parent 1</label>
+        <select asp-for="Parent1Id" asp-items="ViewBag.Parent1Id" class="form-select">
+            <option value="">-- Select Parent 1 --</option>
+        </select>
+        <span asp-validation-for="Parent1Id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parent2Id" class="form-label">Parent 2</label>
+        <select asp-for="Parent2Id" asp-items="ViewBag.Parent2Id" class="form-select">
+            <option value="">-- Select Parent 2 --</option>
+        </select>
+        <span asp-validation-for="Parent2Id" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LifeDescription" class="form-label"></label>
+        <textarea asp-for="LifeDescription" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="LifeDescription" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,8 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Person
+<h2>Delete</h2>
+<p>Are you sure you want to delete @Model.FirstName?</p>
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Delete</button>
+</form>
+

@@ -1,0 +1,5 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Person
+<h2>Details</h2>
+<p>@Model.FirstName @Model.LastName</p>
+<p>Birth: @Model.BirthDate</p>
+<p>Parents: @Model.Parent1?.FirstName @Model.Parent2?.FirstName</p>
