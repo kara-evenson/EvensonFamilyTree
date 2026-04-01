@@ -45,6 +45,10 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 .Include(p => p.FamilyTree)
                 .Include(p => p.Parent1)
                 .Include(p => p.Parent2)
+                .Include(p => p.Occupations)
+                .Include(p => p.Educations)
+                .Include(p => p.MilitaryServices)
+                    .ThenInclude(ms => ms.MilitaryType)
                 .Include(p => p.Stories)
                     .ThenInclude(s => s.User)
                 .FirstOrDefaultAsync(p => p.Id == id);

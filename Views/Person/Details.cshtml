@@ -40,6 +40,91 @@
     @(Model.Parent2 != null ? $"{Model.Parent2.FirstName} {Model.Parent2.LastName}" : "")
 </div>
 
+<p>    
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+</p>
+
+<hr />
+<h2>Occupations</h2>
+
+<p>
+    <a asp-controller="Occupation" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+        Add Occupation
+    </a>
+</p>
+
+@if (Model.Occupations == null || !Model.Occupations.Any())
+{
+    <p>No occupations recorded.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var occupation in Model.Occupations.OrderByDescending(o => o.StartDate))
+        {
+            <li class="list-group-item">
+                <strong>@occupation.Title</strong><br />
+                @occupation.StartDate?.ToString("MM/dd/yyyy") - @occupation.EndDate?.ToString("MM/dd/yyyy")<br />
+                @occupation.Notes
+            </li>
+        }
+    </ul>
+}
+
+<hr />
+<h2>Education</h2>
+
+<p>
+    <a asp-controller="Education" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+        Add Education
+    </a>
+</p>
+
+@if (Model.Educations == null || !Model.Educations.Any())
+{
+    <p>No education recorded.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var education in Model.Educations.OrderByDescending(o => o.StartDate))
+        {
+            <li class="list-group-item">
+                <strong>@education.SchoolAttended</strong><br />
+                @education.StartDate?.ToString("MM/dd/yyyy") - @education.EndDate?.ToString("MM/dd/yyyy")<br />
+                @education.Notes
+            </li>
+        }
+    </ul>
+}
+
+<hr />
+<h2>Military Service</h2>
+
+<p>
+    <a asp-controller="MilitaryService" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+        Add Military Service
+    </a>
+</p>
+
+@if (Model.MilitaryServices == null || !Model.MilitaryServices.Any())
+{
+    <p>No military service recorded.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var militaryService in Model.MilitaryServices.OrderByDescending(o => o.StartDate))
+        {
+            <li class="list-group-item">
+                <strong>@militaryService.MilitaryType?.MilitaryBranch</strong>
+                @militaryService.StartDate?.ToString("MM/dd/yyyy") - @militaryService.EndDate?.ToString("MM/dd/yyyy")<br />
+                @militaryService.Commendations
+            </li>
+        }
+    </ul>
+}
+
 <hr />
 
 <h2>User Stories</h2>
@@ -70,6 +155,5 @@ else
 }
 
 <p>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
     <a asp-action="Index" class="btn btn-secondary">Back to List</a>
 </p>

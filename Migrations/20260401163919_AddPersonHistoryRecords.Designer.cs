@@ -4,6 +4,7 @@ using EvensonFamilyTreeAppsDev.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvensonFamilyTreeAppsDev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260401163919_AddPersonHistoryRecords")]
+    partial class AddPersonHistoryRecords
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,49 +217,7 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MilitaryTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MilitaryBranch = "Army"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MilitaryBranch = "Navy"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            MilitaryBranch = "Air Force"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            MilitaryBranch = "Marines"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            MilitaryBranch = "Coast Guard"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            MilitaryBranch = "Space Force"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            MilitaryBranch = "National Guard"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            MilitaryBranch = "Other"
-                        });
+                    b.ToTable("MilitaryType");
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Occupation", b =>

@@ -38,6 +38,5 @@ namespace EvensonFamilyTreeAppsDev.Models
         public ICollection<Occupation> Occupations { get; set; } = new List<Occupation>();
         public ICollection<Education> Educations { get; set; } = new List<Education>();
         public ICollection<MilitaryService> MilitaryServices { get; set; } = new List<MilitaryService>();
-        public ICollection<UserStory> UserStories { get; set; } = new List<UserStory>();
     }
 }

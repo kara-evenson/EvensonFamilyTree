@@ -12,7 +12,9 @@ namespace EvensonFamilyTreeAppsDev.Data
         public DbSet<Person> People => Set<Person>();
         public DbSet<FamilyTree> FamilyTrees => Set<FamilyTree>();
         public DbSet<Occupation> Occupations => Set<Occupation>();
+        public DbSet<Education> Educations => Set<Education>();
         public DbSet<MilitaryService> MilitaryServices => Set<MilitaryService>();
+        public DbSet<MilitaryType> MilitaryTypes => Set<MilitaryType>();
         public DbSet<Partnership> Partnerships => Set<Partnership>();
         public DbSet<UserStory> UserStories => Set<UserStory>();
         public DbSet<RelationshipType> RelationshipTypes => Set<RelationshipType>();
@@ -85,6 +87,24 @@ namespace EvensonFamilyTreeAppsDev.Data
             modelBuilder.Entity<AuthorizedViewer>()
                 .HasIndex(av => new { av.FamilyTreeId, av.UserId })
                 .IsUnique();
+
+            modelBuilder.Entity<Occupation>()
+                .HasOne(o => o.Person)
+                .WithMany(p => p.Occupations)
+                .HasForeignKey(o => o.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Education>()
+                .HasOne(e => e.Person)
+                .WithMany(p => p.Educations)
+                .HasForeignKey(e => e.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<MilitaryService>()
+                .HasOne(ms => ms.Person)
+                .WithMany(p => p.MilitaryServices)
+                .HasForeignKey(ms => ms.PersonId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             SeedData.Seed(modelBuilder);
         }
