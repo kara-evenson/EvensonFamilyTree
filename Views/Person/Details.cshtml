@@ -1,5 +1,75 @@
 ﻿@model EvensonFamilyTreeAppsDev.Models.Person
-<h2>Details</h2>
-<p>@Model.FirstName @Model.LastName</p>
-<p>Birth: @Model.BirthDate</p>
-<p>Parents: @Model.Parent1?.FirstName @Model.Parent2?.FirstName</p>
+
+<h1>Ancestor Details</h1>
+
+<div class="mb-3">
+    <strong>Name:</strong> @Model.Prefix @Model.FirstName @Model.LastName @Model.Suffix
+</div>
+
+<div class="mb-3">
+    <strong>Gender:</strong> @Model.Gender
+</div>
+
+<div class="mb-3">
+    <strong>Birth Date:</strong> @Model.BirthDate?.ToString("MM/dd/yyyy")
+</div>
+
+<div class="mb-3">
+    <strong>Birth Place:</strong> @Model.BirthPlace
+</div>
+
+<div class="mb-3">
+    <strong>Death Date:</strong> @Model.DeathDate?.ToString("MM/dd/yyyy")
+</div>
+
+<div class="mb-3">
+    <strong>Resting Place:</strong> @Model.RestingPlace
+</div>
+
+<div class="mb-3">
+    <strong>Life Description:</strong> @Model.LifeDescription
+</div>
+
+<div class="mb-3">
+    <strong>Parent 1:</strong>
+    @(Model.Parent1 != null ? $"{Model.Parent1.FirstName} {Model.Parent1.LastName}" : "")
+</div>
+
+<div class="mb-3">
+    <strong>Parent 2:</strong>
+    @(Model.Parent2 != null ? $"{Model.Parent2.FirstName} {Model.Parent2.LastName}" : "")
+</div>
+
+<hr />
+
+<h2>User Stories</h2>
+
+<p>
+    <a asp-controller="UserStory" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+        Add Story
+    </a>
+</p>
+
+@if (Model.Stories == null || !Model.Stories.Any())
+{
+    <p>No stories have been added yet.</p>
+}
+else
+{
+    @foreach (var story in Model.Stories.OrderByDescending(s => s.CreatedOn))
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>@story.Story</p>
+                <small class="text-muted">
+                    Added by @story.User?.Email on @story.CreatedOn.ToLocalTime().ToString("MM/dd/yyyy h:mm tt")
+                </small>
+            </div>
+        </div>
+    }
+}
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+</p>

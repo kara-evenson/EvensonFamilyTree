@@ -1,0 +1,23 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.AuthorizedViewer
+
+@{
+    ViewData["Title"] = "Remove Authorized Viewer";
+}
+
+<h1>Remove Authorized Viewer</h1>
+
+<p>Are you sure you want to remove this viewer?</p>
+
+<div class="mb-3">
+    <strong>Family Tree:</strong> @Model.FamilyTree.FamilyName
+</div>
+
+<div class="mb-3">
+    <strong>Viewer:</strong> @Model.User.Email
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Remove Viewer</button>
+    <a asp-controller="FamilyTree" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

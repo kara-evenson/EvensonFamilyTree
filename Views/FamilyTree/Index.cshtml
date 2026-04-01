@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EvensonFamilyTreeAppsDev.Models.FamilyTree>
+﻿@model EvensonFamilyTreeAppsDev.ViewModels.FamilyTree.FamilyTreeIndexViewModel
 
 @{
     ViewData["Title"] = "Family Trees";
@@ -6,22 +6,59 @@
 
 <h1>Family Trees</h1>
 
-<p>FamilyTree count: @ViewBag.FamilyTreeCount</p>
-<p>People count: @ViewBag.PeopleCount</p>
+<hr />
 
-@if (!Model.Any())
+<h2>My Family Tree</h2>
+
+@if (Model.OwnedTrees == null || !Model.OwnedTrees.Any())
 {
-    <p>No family trees found.</p>
+    <p>You do not own any family trees yet.</p>
 }
 else
 {
-    @foreach (var tree in Model)
+    @foreach (var tree in Model.OwnedTrees)
     {
         <div class="card mb-4">
             <div class="card-header">
-                <h2 class="mb-0">@tree.FamilyName</h2>
+                <h3 class="mb-0">@tree.FamilyName</h3>
             </div>
+
             <div class="card-body">
+                <p>
+                    <a asp-controller="AuthorizedViewer"
+                       asp-action="Create"
+                       asp-route-familyTreeId="@tree.Id"
+                       class="btn btn-sm btn-primary">
+                        Add Authorized Viewer
+                    </a>
+                </p>
+
+                <h5>Authorized Viewers</h5>
+
+                @if (tree.AuthorizedViewers == null || !tree.AuthorizedViewers.Any())
+                {
+                    <p>No authorized viewers yet.</p>
+                }
+                else
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var viewer in tree.AuthorizedViewers)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@viewer.User.Email</span>
+                                <a asp-controller="AuthorizedViewer"
+                                   asp-action="Delete"
+                                   asp-route-id="@viewer.Id"
+                                   class="btn btn-sm btn-danger">
+                                    Remove
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                <h5>Ancestors</h5>
+
                 @if (tree.Members == null || !tree.Members.Any())
                 {
                     <p>No ancestors found for this family tree.</p>
@@ -35,7 +72,6 @@ else
                                 <th>Gender</th>
                                 <th>Birth Date</th>
                                 <th>Birth Place</th>
-                                <th>Parents</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,19 +79,74 @@ else
                             {
                                 <tr>
                                     <td>
-                                        @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
+                                        <a asp-controller="Person" asp-action="Details" asp-route-id="@person.Id">
+                                            @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
+                                        </a>
                                     </td>
                                     <td>@person.Gender</td>
                                     <td>@person.BirthDate?.ToString("MM/dd/yyyy")</td>
                                     <td>@person.BirthPlace</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+}
+
+<hr />
+
+<h2>Shared With Me</h2>
+
+@if (Model.SharedTrees == null || !Model.SharedTrees.Any())
+{
+    <p>No family trees have been shared with you.</p>
+}
+else
+{
+    @foreach (var tree in Model.SharedTrees)
+    {
+        <div class="card mb-4 border-info">
+            <div class="card-header">
+                <h3 class="mb-0">@tree.FamilyName</h3>
+            </div>
+
+            <div class="card-body">
+                <p>
+                    <strong>Owner:</strong> @tree.Owner?.Email
+                </p>
+
+                <h5>Ancestors</h5>
+
+                @if (tree.Members == null || !tree.Members.Any())
+                {
+                    <p>No ancestors found for this family tree.</p>
+                }
+                else
+                {
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Birth Date</th>
+                                <th>Birth Place</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var person in tree.Members.OrderBy(p => p.LastName).ThenBy(p => p.FirstName))
+                            {
+                                <tr>
                                     <td>
-                                        @(person.Parent1 != null ? $"{person.Parent1.FirstName} {person.Parent1.LastName}" : "")
-                                        @if (person.Parent1 != null && person.Parent2 != null)
-                                        {
-                                            <br />
-                                        }
-                                        @(person.Parent2 != null ? $"{person.Parent2.FirstName} {person.Parent2.LastName}" : "")
+                                        <a asp-controller="Person" asp-action="Details" asp-route-id="@person.Id">
+                                            @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
+                                        </a>
                                     </td>
+                                    <td>@person.Gender</td>
+                                    <td>@person.BirthDate?.ToString("MM/dd/yyyy")</td>
+                                    <td>@person.BirthPlace</td>
                                 </tr>
                             }
                         </tbody>

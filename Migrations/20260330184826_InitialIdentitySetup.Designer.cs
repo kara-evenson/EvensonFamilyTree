@@ -4,6 +4,7 @@ using EvensonFamilyTreeAppsDev.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EvensonFamilyTreeAppsDev.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330184826_InitialIdentitySetup")]
+    partial class InitialIdentitySetup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,64 +90,6 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.AuthorizedViewer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FamilyTreeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("FamilyTreeId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("AuthorizedViewers");
-                });
-
-            modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Education", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("EducationLevel")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SchoolAttended")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("Education");
-                });
-
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.FamilyTree", b =>
                 {
                     b.Property<int>("Id")
@@ -164,6 +109,23 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("FamilyTrees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FamilyName = "Johnson Family Tree"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FamilyName = "Martinez Family Tree"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FamilyName = "Evenson Family Tree"
+                        });
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.MilitaryService", b =>
@@ -174,9 +136,6 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Commendations")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
@@ -186,17 +145,12 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MilitaryTypeId");
-
-                    b.HasIndex("PersonId");
 
                     b.ToTable("MilitaryServices");
                 });
@@ -231,18 +185,10 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("PersonId");
 
                     b.ToTable("Occupations");
                 });
@@ -282,6 +228,32 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.HasIndex("RelationshipTypeId");
 
                     b.ToTable("Partnerships");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Person1Id = 1,
+                            Person2Id = 2,
+                            RelationshipTypeId = 1,
+                            StartDate = new DateTime(1998, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Person1Id = 4,
+                            Person2Id = 5,
+                            RelationshipTypeId = 1,
+                            StartDate = new DateTime(1990, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Person1Id = 8,
+                            Person2Id = 9,
+                            RelationshipTypeId = 1,
+                            StartDate = new DateTime(1989, 8, 26, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Person", b =>
@@ -340,6 +312,123 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.HasIndex("Parent2Id");
 
                     b.ToTable("People");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BirthDate = new DateTime(1970, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Chicago, IL",
+                            FamilyTreeId = 1,
+                            FirstName = "Robert",
+                            Gender = 1,
+                            LastName = "Johnson"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BirthDate = new DateTime(1974, 8, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Boston, MA",
+                            FamilyTreeId = 1,
+                            FirstName = "Emily",
+                            Gender = 2,
+                            LastName = "Johnson"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BirthDate = new DateTime(2001, 5, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Chicago, IL",
+                            FamilyTreeId = 1,
+                            FirstName = "Michael",
+                            Gender = 1,
+                            LastName = "Johnson",
+                            Parent1Id = 1,
+                            Parent2Id = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BirthDate = new DateTime(1965, 11, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "San Juan, PR",
+                            FamilyTreeId = 2,
+                            FirstName = "Carlos",
+                            Gender = 1,
+                            LastName = "Martinez"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BirthDate = new DateTime(1968, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Houston, TX",
+                            FamilyTreeId = 2,
+                            FirstName = "Ana",
+                            Gender = 2,
+                            LastName = "Martinez"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BirthDate = new DateTime(1998, 7, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Houston, TX",
+                            FamilyTreeId = 2,
+                            FirstName = "Sophia",
+                            Gender = 2,
+                            LastName = "Martinez",
+                            Parent1Id = 4,
+                            Parent2Id = 5
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BirthDate = new DateTime(1994, 4, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Ashland, WI",
+                            FamilyTreeId = 3,
+                            FirstName = "Kara",
+                            Gender = 2,
+                            LastName = "Evenson"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BirthDate = new DateTime(1958, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Ashland, WI",
+                            FamilyTreeId = 3,
+                            FirstName = "Brian",
+                            Gender = 1,
+                            LastName = "Evenson"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BirthDate = new DateTime(1958, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Florham Park, NJ",
+                            FamilyTreeId = 3,
+                            FirstName = "Kathleen",
+                            Gender = 2,
+                            LastName = "Evenson"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BirthDate = new DateTime(1932, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Ashland, WI",
+                            FamilyTreeId = 3,
+                            FirstName = "Marlene",
+                            Gender = 2,
+                            LastName = "Martin"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BirthDate = new DateTime(1943, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            BirthPlace = "Grand Forks, ND",
+                            DeathDate = new DateTime(2021, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FamilyTreeId = 3,
+                            FirstName = "Gary",
+                            Gender = 1,
+                            LastName = "Martin"
+                        });
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.RelationshipType", b =>
@@ -388,36 +477,15 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FamilyTreeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PersonId1")
-                        .HasColumnType("int");
-
                     b.Property<string>("Story")
-                        .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FamilyTreeId");
-
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PersonId1");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserStories");
                 });
@@ -559,36 +627,6 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.AuthorizedViewer", b =>
-                {
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.FamilyTree", "FamilyTree")
-                        .WithMany("AuthorizedViewers")
-                        .HasForeignKey("FamilyTreeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FamilyTree");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Education", b =>
-                {
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.Person", "Person")
-                        .WithMany("Educations")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
-                });
-
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.FamilyTree", b =>
                 {
                     b.HasOne("EvensonFamilyTreeAppsDev.Models.AppUser", "Owner")
@@ -605,26 +643,7 @@ namespace EvensonFamilyTreeAppsDev.Migrations
                         .WithMany()
                         .HasForeignKey("MilitaryTypeId");
 
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.Person", "Person")
-                        .WithMany("MilitaryServices")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("MilitaryType");
-
-                    b.Navigation("Person");
-                });
-
-            modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Occupation", b =>
-                {
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.Person", "Person")
-                        .WithMany("Occupations")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Partnership", b =>
@@ -677,33 +696,13 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.UserStory", b =>
                 {
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.FamilyTree", "FamilyTree")
-                        .WithMany("UserStories")
-                        .HasForeignKey("FamilyTreeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("EvensonFamilyTreeAppsDev.Models.Person", "Person")
                         .WithMany("Stories")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.Person", null)
-                        .WithMany("UserStories")
-                        .HasForeignKey("PersonId1");
-
-                    b.HasOne("EvensonFamilyTreeAppsDev.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("FamilyTree");
-
                     b.Navigation("Person");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -764,11 +763,7 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.FamilyTree", b =>
                 {
-                    b.Navigation("AuthorizedViewers");
-
                     b.Navigation("Members");
-
-                    b.Navigation("UserStories");
                 });
 
             modelBuilder.Entity("EvensonFamilyTreeAppsDev.Models.Person", b =>
@@ -777,15 +772,7 @@ namespace EvensonFamilyTreeAppsDev.Migrations
 
                     b.Navigation("ChildrenFromParent2");
 
-                    b.Navigation("Educations");
-
-                    b.Navigation("MilitaryServices");
-
-                    b.Navigation("Occupations");
-
                     b.Navigation("Stories");
-
-                    b.Navigation("UserStories");
                 });
 #pragma warning restore 612, 618
         }
