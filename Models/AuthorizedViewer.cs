@@ -7,7 +7,7 @@
         public int FamilyTreeId { get; set; }
         public FamilyTree FamilyTree { get; set; } = null!;
 
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public AppUser User { get; set; } = null!;
     }
 }

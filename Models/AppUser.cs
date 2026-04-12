@@ -1,16 +1,10 @@
-﻿namespace EvensonFamilyTreeAppsDev.Models
+﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+
+namespace EvensonFamilyTreeAppsDev.Models
 {
-    public class AppUser
+    public class AppUser : IdentityUser
     {
-        public int Id { get; set; }
-
-        public string Email { get; set; } = string.Empty;
-        public string PasswordHash { get; set; } = string.Empty;
-
-        public int? PersonId { get; set; }
-        public Person? Person { get; set; }
-
-        public int? UserTypeId { get; set; }
-        public UserType? UserType { get; set; }
+        public ICollection<FamilyTree> OwnedFamilyTrees { get; set; } = new List<FamilyTree>();
     }
 }

@@ -9,15 +9,8 @@
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="FamilyTreeId" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="FamilyTreeId" class="form-label"></label>
-        <select asp-for="FamilyTreeId" asp-items="ViewBag.FamilyTreeId" class="form-select">
-            <option value="">-- Select Family Tree --</option>
-        </select>
-        <span asp-validation-for="FamilyTreeId" class="text-danger"></span>
-    </div>
 
     <div class="mb-3">
         <label asp-for="Prefix" class="form-label"></label>

@@ -1,10 +1,13 @@
 ﻿using EvensonFamilyTreeAppsDev.Data;
-using EvensonFamilyTreeAppsDev.Models;
+using EvensonFamilyTreeAppsDev.ViewModels.FamilyTree;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EvensonFamilyTreeAppsDev.Controllers
 {
+    [Authorize]
     public class FamilyTreeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -14,24 +17,37 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             _context = context;
         }
 
-        // GET: /FamilyTree
         public async Task<IActionResult> Index()
         {
-            var familyTreeCount = await _context.FamilyTrees.CountAsync();
-            var peopleCount = await _context.People.CountAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            ViewBag.FamilyTreeCount = familyTreeCount;
-            ViewBag.PeopleCount = peopleCount;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
 
-            var familyTrees = await _context.FamilyTrees
+            var ownedTrees = await _context.FamilyTrees
+                .Where(ft => ft.OwnerId == userId)
                 .Include(ft => ft.Members)
-                    .ThenInclude(p => p.Parent1)
-                .Include(ft => ft.Members)
-                    .ThenInclude(p => p.Parent2)
+                .Include(ft => ft.AuthorizedViewers)
+                    .ThenInclude(av => av.User)
                 .OrderBy(ft => ft.FamilyName)
                 .ToListAsync();
 
-            return View(familyTrees);
+            var sharedTrees = await _context.FamilyTrees
+                .Where(ft => ft.OwnerId != userId && ft.AuthorizedViewers.Any(av => av.UserId == userId))
+                .Include(ft => ft.Members)
+                .Include(ft => ft.Owner)
+                .OrderBy(ft => ft.FamilyName)
+                .ToListAsync();
+
+            var model = new FamilyTreeIndexViewModel
+            {
+                OwnedTrees = ownedTrees,
+                SharedTrees = sharedTrees
+            };
+
+            return View(model);
         }
     }
 }
