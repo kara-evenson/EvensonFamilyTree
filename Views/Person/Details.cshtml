@@ -45,6 +45,41 @@
 </p>
 
 <hr />
+<h2>Partnerships</h2>
+
+<p>
+    <a asp-controller="Partnership" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+        Add Partnership
+    </a>
+</p>
+
+@{
+    var partnerships = ViewBag.Partnerships as List<EvensonFamilyTreeAppsDev.Models.Partnership>;
+}
+
+@if (partnerships == null || !partnerships.Any())
+{
+    <p>No partnerships recorded.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var partnership in partnerships)
+        {
+            var partner = partnership.Person1Id == Model.Id ? partnership.Person2 : partnership.Person1;
+
+            <li class="list-group-item">
+                <strong>@partnership.RelationshipType?.Name</strong><br />
+                Partner:
+                @(partner != null ? $"{partner.FirstName} {partner.LastName}" : "Unknown")<br />
+                @partnership.StartDate?.ToString("MM/dd/yyyy") - @partnership.EndDate?.ToString("MM/dd/yyyy")<br />
+                @partnership.Notes
+            </li>
+        }
+    </ul>
+}
+
+<hr />
 <h2>Occupations</h2>
 
 <p>

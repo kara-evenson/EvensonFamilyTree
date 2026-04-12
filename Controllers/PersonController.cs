@@ -65,6 +65,16 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 return Forbid();
             }
 
+            var partnerships = await _context.Partnerships
+                .Include(pt => pt.Person1)
+                .Include(pt => pt.Person2)
+                .Include(pt => pt.RelationshipType)
+                .Where(pt => pt.Person1Id == person.Id || pt.Person2Id == person.Id)
+                .OrderByDescending(pt => pt.StartDate)
+                .ToListAsync();
+
+            ViewBag.Partnerships = partnerships;
+
             return View(person);
         }
 
