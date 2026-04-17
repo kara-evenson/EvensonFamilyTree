@@ -1,5 +1,9 @@
 ﻿@model EvensonFamilyTreeAppsDev.Models.Person
 
+@{
+    var isOwner = ViewBag.IsOwner != null && (bool)ViewBag.IsOwner;
+}
+
 <h1>Ancestor Details</h1>
 
 <div class="mb-3">
@@ -40,18 +44,24 @@
     @(Model.Parent2 != null ? $"{Model.Parent2.FirstName} {Model.Parent2.LastName}" : "")
 </div>
 
-<p>    
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-</p>
+@if (isOwner)
+{
+    <p>    
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+    </p>
+}
 
 <hr />
 <h2>Partnerships</h2>
 
-<p>
-    <a asp-controller="Partnership" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
-        Add Partnership
-    </a>
-</p>
+@if (isOwner)
+    {
+        <p>
+            <a asp-controller="Partnership" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+                Add Partnership
+            </a>
+        </p>
+    }
 
 @{
     var partnerships = ViewBag.Partnerships as List<EvensonFamilyTreeAppsDev.Models.Partnership>;
@@ -74,6 +84,12 @@ else
                 @(partner != null ? $"{partner.FirstName} {partner.LastName}" : "Unknown")<br />
                 @partnership.StartDate?.ToString("MM/dd/yyyy") - @partnership.EndDate?.ToString("MM/dd/yyyy")<br />
                 @partnership.Notes
+
+                @if (isOwner)
+                {
+                    <a asp-controller="Partnership" asp-action="Edit" asp-route-id="@partnership.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="Partnership" asp-action="Delete" asp-route-id="@partnership.Id" class="btn btn-sm btn-danger">Delete</a>
+                }
             </li>
         }
     </ul>
@@ -83,9 +99,12 @@ else
 <h2>Occupations</h2>
 
 <p>
-    <a asp-controller="Occupation" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
-        Add Occupation
-    </a>
+    @if (isOwner)
+    {
+        <a asp-controller="Occupation" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+            Add Occupation
+        </a>
+    }
 </p>
 
 @if (Model.Occupations == null || !Model.Occupations.Any())
@@ -101,6 +120,12 @@ else
                 <strong>@occupation.Title</strong><br />
                 @occupation.StartDate?.ToString("MM/dd/yyyy") - @occupation.EndDate?.ToString("MM/dd/yyyy")<br />
                 @occupation.Notes
+
+                @if (isOwner)
+                {
+                    <a asp-controller="Occupation" asp-action="Edit" asp-route-id="@occupation.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="Occupation" asp-action="Delete" asp-route-id="@occupation.Id" class="btn btn-sm btn-danger">Delete</a>
+                }
             </li>
         }
     </ul>
@@ -109,11 +134,14 @@ else
 <hr />
 <h2>Education</h2>
 
-<p>
-    <a asp-controller="Education" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
-        Add Education
-    </a>
-</p>
+@if (isOwner)
+{
+    <p>
+        <a asp-controller="Education" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+            Add Education
+        </a>
+    </p>
+}
 
 @if (Model.Educations == null || !Model.Educations.Any())
 {
@@ -128,6 +156,12 @@ else
                 <strong>@education.SchoolAttended</strong><br />
                 @education.StartDate?.ToString("MM/dd/yyyy") - @education.EndDate?.ToString("MM/dd/yyyy")<br />
                 @education.Notes
+
+                @if (isOwner)
+                {
+                    <a asp-controller="Education" asp-action="Edit" asp-route-id="@education.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="Education" asp-action="Delete" asp-route-id="@education.Id" class="btn btn-sm btn-danger">Delete</a>
+                }
             </li>
         }
     </ul>
@@ -136,11 +170,14 @@ else
 <hr />
 <h2>Military Service</h2>
 
-<p>
-    <a asp-controller="MilitaryService" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
-        Add Military Service
-    </a>
-</p>
+@if (isOwner)
+{
+    <p>
+        <a asp-controller="MilitaryService" asp-action="Create" asp-route-personId="@Model.Id" class="btn btn-primary">
+            Add Military Service
+        </a>
+    </p>
+}
 
 @if (Model.MilitaryServices == null || !Model.MilitaryServices.Any())
 {
@@ -155,6 +192,12 @@ else
                 <strong>@militaryService.MilitaryType?.MilitaryBranch</strong>
                 @militaryService.StartDate?.ToString("MM/dd/yyyy") - @militaryService.EndDate?.ToString("MM/dd/yyyy")<br />
                 @militaryService.Commendations
+
+                @if (isOwner)
+                {
+                    <a asp-controller="MilitaryService" asp-action="Edit" asp-route-id="@militaryService.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-controller="MilitaryService" asp-action="Delete" asp-route-id="@militaryService.Id" class="btn btn-sm btn-danger">Delete</a>
+                }
             </li>
         }
     </ul>

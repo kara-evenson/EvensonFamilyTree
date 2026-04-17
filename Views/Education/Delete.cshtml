@@ -1,0 +1,27 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Education
+
+@{
+    ViewData["Title"] = "Delete Education";
+}
+
+<h1>Delete Education</h1>
+
+<p>Are you sure you want to delete this education record?</p>
+
+<div class="mb-3">
+    <strong>Ancestor:</strong> @Model.Person.FirstName @Model.Person.LastName
+</div>
+
+<div class="mb-3">
+    <strong>School:</strong> @Model.SchoolAttended
+</div>
+
+<div class="mb-3">
+    <strong>Level:</strong> @Model.EducationLevel
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-controller="Person" asp-action="Details" asp-route-id="@Model.PersonId" class="btn btn-secondary">Cancel</a>
+</form>

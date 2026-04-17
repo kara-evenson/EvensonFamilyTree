@@ -87,6 +87,122 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             return RedirectToAction("Details", "Person", new { id = model.PersonId });
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var occupation = await _context.Occupations
+                .Include(o => o.Person)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (occupation == null)
+            {
+                return NotFound();
+            }
+
+            if (!await UserOwnsFamilyTreeAsync((int)occupation.Person.FamilyTreeId))
+            {
+                return Forbid();
+            }
+
+            var model = new OccupationCreateViewModel
+            {
+                PersonId = occupation.PersonId,
+                PersonName = $"{occupation.Person.FirstName} {occupation.Person.LastName}".Trim(),
+                Title = occupation.Title,
+                StartDate = occupation.StartDate,
+                EndDate = occupation.EndDate,
+                Notes = occupation.Notes
+            };
+
+            ViewBag.OccupationId = occupation.Id;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, OccupationCreateViewModel model)
+        {
+            var occupation = await _context.Occupations
+                .Include(o => o.Person)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (occupation == null)
+            {
+                return NotFound();
+            }
+
+            if (!await UserOwnsFamilyTreeAsync((int)occupation.Person.FamilyTreeId))
+            {
+                return Forbid();
+            }
+
+            model.PersonName = $"{occupation.Person.FirstName} {occupation.Person.LastName}".Trim();
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.OccupationId = occupation.Id;
+                return View(model);
+            }
+
+            occupation.Title = model.Title;
+            occupation.StartDate = model.StartDate;
+            occupation.EndDate = model.EndDate;
+            occupation.Notes = model.Notes;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Person", new { id = occupation.PersonId });
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var occupation = await _context.Occupations
+                .Include(o => o.Person)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (occupation == null)
+            {
+                return NotFound();
+            }
+
+            if (!await UserOwnsFamilyTreeAsync((int)occupation.Person.FamilyTreeId))
+            {
+                return Forbid();
+            }
+
+            return View(occupation);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var occupation = await _context.Occupations
+                .Include(o => o.Person)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (occupation == null)
+            {
+                return NotFound();
+            }
+
+            if (!await UserOwnsFamilyTreeAsync((int)occupation.Person.FamilyTreeId))
+            {
+                return Forbid();
+            }
+
+            var personId = occupation.PersonId;
+
+            _context.Occupations.Remove(occupation);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Person", new { id = personId });
+        }
+
         private async Task<bool> UserOwnsFamilyTreeAsync(int familyTreeId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

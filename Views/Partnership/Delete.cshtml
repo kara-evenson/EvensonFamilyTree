@@ -1,0 +1,27 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Partnership
+
+@{
+    ViewData["Title"] = "Delete Partnership";
+}
+
+<h1>Delete Partnership</h1>
+
+<p>Are you sure you want to delete this partnership?</p>
+
+<div class="mb-3">
+    <strong>Person:</strong> @Model.Person1.FirstName @Model.Person1.LastName
+</div>
+
+<div class="mb-3">
+    <strong>Partner:</strong> @Model.Person2.FirstName @Model.Person2.LastName
+</div>
+
+<div class="mb-3">
+    <strong>Relationship:</strong> @Model.RelationshipType?.Name
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-controller="Person" asp-action="Details" asp-route-id="@Model.Person1Id" class="btn btn-secondary">Cancel</a>
+</form>

@@ -25,20 +25,8 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 .Include(p => p.FamilyTree)
                 .FirstOrDefaultAsync(p => p.Id == personId);
 
-            if (person == null)
-            {
-                return NotFound();
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var ownsTree = await _context.FamilyTrees
-                .AnyAsync(ft => ft.Id == person.FamilyTreeId && ft.OwnerId == userId);
-
-            if (!ownsTree)
-            {
-                return Forbid();
-            }
+            if (person == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)person.FamilyTreeId)) return Forbid();
 
             var model = new PartnershipCreateViewModel
             {
@@ -47,7 +35,6 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             };
 
             await PopulateDropDowns((int)person.FamilyTreeId, person.Id);
-
             return View(model);
         }
 
@@ -59,25 +46,12 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 .Include(p => p.FamilyTree)
                 .FirstOrDefaultAsync(p => p.Id == model.Person1Id);
 
-            if (person1 == null)
-            {
-                return NotFound();
-            }
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var ownsTree = await _context.FamilyTrees
-                .AnyAsync(ft => ft.Id == person1.FamilyTreeId && ft.OwnerId == userId);
-
-            if (!ownsTree)
-            {
-                return Forbid();
-            }
+            if (person1 == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)person1.FamilyTreeId)) return Forbid();
 
             model.Person1Name = $"{person1.FirstName} {person1.LastName}".Trim();
 
-            var person2 = await _context.People
-                .FirstOrDefaultAsync(p => p.Id == model.Person2Id);
+            var person2 = await _context.People.FirstOrDefaultAsync(p => p.Id == model.Person2Id);
 
             if (person2 == null || person2.FamilyTreeId != person1.FamilyTreeId)
             {
@@ -111,6 +85,113 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             return RedirectToAction("Details", "Person", new { id = model.Person1Id });
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var partnership = await _context.Partnerships
+                .Include(p => p.Person1)
+                    .ThenInclude(p => p.FamilyTree)
+                .Include(p => p.Person2)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (partnership == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)partnership.Person1.FamilyTreeId)) return Forbid();
+
+            var model = new PartnershipCreateViewModel
+            {
+                Person1Id = partnership.Person1Id,
+                Person1Name = $"{partnership.Person1.FirstName} {partnership.Person1.LastName}".Trim(),
+                Person2Id = partnership.Person2Id,
+                RelationshipTypeId = partnership.RelationshipTypeId,
+                StartDate = partnership.StartDate,
+                EndDate = partnership.EndDate,
+                Notes = partnership.Notes
+            };
+
+            await PopulateDropDowns((int)partnership.Person1.FamilyTreeId, partnership.Person1Id, partnership.Person2Id, partnership.RelationshipTypeId);
+            ViewBag.PartnershipId = partnership.Id;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, PartnershipCreateViewModel model)
+        {
+            var partnership = await _context.Partnerships
+                .Include(p => p.Person1)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (partnership == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)partnership.Person1.FamilyTreeId)) return Forbid();
+
+            model.Person1Name = $"{partnership.Person1.FirstName} {partnership.Person1.LastName}".Trim();
+
+            var person2 = await _context.People.FirstOrDefaultAsync(p => p.Id == model.Person2Id);
+
+            if (person2 == null || person2.FamilyTreeId != partnership.Person1.FamilyTreeId)
+            {
+                ModelState.AddModelError("Person2Id", "Selected partner must belong to the same family tree.");
+            }
+
+            if (model.Person1Id == model.Person2Id)
+            {
+                ModelState.AddModelError("Person2Id", "A person cannot be partnered with themselves.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateDropDowns((int)partnership.Person1.FamilyTreeId, partnership.Person1Id, model.Person2Id, model.RelationshipTypeId);
+                ViewBag.PartnershipId = partnership.Id;
+                return View(model);
+            }
+
+            partnership.Person2Id = model.Person2Id;
+            partnership.RelationshipTypeId = model.RelationshipTypeId;
+            partnership.StartDate = model.StartDate;
+            partnership.EndDate = model.EndDate;
+            partnership.Notes = model.Notes;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Person", new { id = partnership.Person1Id });
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var partnership = await _context.Partnerships
+                .Include(p => p.Person1)
+                    .ThenInclude(p => p.FamilyTree)
+                .Include(p => p.Person2)
+                .Include(p => p.RelationshipType)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (partnership == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)partnership.Person1.FamilyTreeId)) return Forbid();
+
+            return View(partnership);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var partnership = await _context.Partnerships
+                .Include(p => p.Person1)
+                    .ThenInclude(p => p.FamilyTree)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (partnership == null) return NotFound();
+            if (!await UserOwnsFamilyTreeAsync((int)partnership.Person1.FamilyTreeId)) return Forbid();
+
+            var personId = partnership.Person1Id;
+
+            _context.Partnerships.Remove(partnership);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Person", new { id = personId });
+        }
+
         private async Task PopulateDropDowns(
             int familyTreeId,
             int currentPersonId,
@@ -137,6 +218,14 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 .ToListAsync();
 
             ViewBag.RelationshipTypeId = new SelectList(relationshipTypes, "Id", "Name", selectedRelationshipTypeId);
+        }
+
+        private async Task<bool> UserOwnsFamilyTreeAsync(int familyTreeId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            return await _context.FamilyTrees
+                .AnyAsync(ft => ft.Id == familyTreeId && ft.OwnerId == userId);
         }
     }
 }

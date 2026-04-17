@@ -75,6 +75,9 @@ namespace EvensonFamilyTreeAppsDev.Controllers
 
             ViewBag.Partnerships = partnerships;
 
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewBag.IsOwner = person.FamilyTree.OwnerId == currentUserId;
+
             return View(person);
         }
 
