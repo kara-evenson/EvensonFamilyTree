@@ -51,17 +51,23 @@ else
                         continue;
                     }
 
-                    var partnership = partnerships?
-                        .FirstOrDefault(p =>
-                            (p.Person1Id == person.Id || p.Person2Id == person.Id) &&
-                            generationPeople.Any(gp => gp.Id == p.Person1Id) &&
-                            generationPeople.Any(gp => gp.Id == p.Person2Id));
+                    var personPartnerships = partnerships?
+                        .Where(p => p.Person1Id == person.Id || p.Person2Id == person.Id)
+                        .OrderBy(p => p.EndDate.HasValue)
+                        .ThenByDescending(p => p.StartDate)
+                        .ToList() ?? new List<EvensonFamilyTreeAppsDev.Models.Partnership>();
 
-                    if (partnership != null)
+                    var currentPartnership = personPartnerships
+                        .FirstOrDefault(p =>
+                            p.EndDate == null &&
+                            generationPeople.Any(gp =>
+                                gp.Id == p.Person1Id || gp.Id == p.Person2Id));
+
+                    if (currentPartnership != null)
                     {
-                        var partner = partnership.Person1Id == person.Id
-                            ? partnership.Person2
-                            : partnership.Person1;
+                        var partner = currentPartnership.Person1Id == person.Id
+                            ? currentPartnership.Person2
+                            : currentPartnership.Person1;
 
                         renderedPersonIds.Add(person.Id);
                         renderedPersonIds.Add(partner.Id);
@@ -69,8 +75,8 @@ else
                         <div class="couple-card">
                             @await Html.PartialAsync("_PersonTreeCard", person)
 
-                            <div class="partnership-link">
-                                <span>@partnership.RelationshipType?.Name</span>
+                            <div class="partnership-link current">
+                                <span>@currentPartnership.RelationshipType?.Name</span>
                                 <div class="heart">♥</div>
                             </div>
 
@@ -81,7 +87,34 @@ else
                     {
                         renderedPersonIds.Add(person.Id);
 
-                        @await Html.PartialAsync("_PersonTreeCard", person)
+                        <div class="single-person-wrapper">
+                            @await Html.PartialAsync("_PersonTreeCard", person)
+
+                            @{
+                                var pastRelationships = personPartnerships
+                                    .Where(p => p.EndDate != null)
+                                    .ToList();
+                            }
+
+                            @if (pastRelationships.Any())
+                            {
+                                <div class="past-relationships">
+                                    <strong>Past relationships:</strong>
+                                    @foreach (var relationship in pastRelationships)
+                                    {
+                                        var pastPartner = relationship.Person1Id == person.Id
+                                            ? relationship.Person2
+                                            : relationship.Person1;
+
+                                        <div>
+                                            @relationship.RelationshipType?.Name:
+                                            @pastPartner.FirstName @pastPartner.LastName
+                                            (@relationship.EndDate?.ToString("yyyy"))
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
                     }
                 }
             </div>

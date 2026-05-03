@@ -213,3 +213,33 @@ a {
     font-size: 1.5rem;
     color: var(--ft-purple);
 }
+
+.single-person-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.partnership-link.current {
+    color: var(--ft-purple);
+    font-weight: 700;
+}
+
+.past-relationships {
+    margin-top: 0.5rem;
+    max-width: 220px;
+    font-size: 0.8rem;
+    color: rgba(41, 46, 30, 0.65);
+    background-color: rgba(255, 255, 255, 0.55);
+    border: 1px dashed var(--ft-periwinkle);
+    border-radius: 10px;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+    .past-relationships strong {
+        display: block;
+        font-size: 0.75rem;
+        color: rgba(41, 46, 30, 0.75);
+        margin-bottom: 0.25rem;
+    }
