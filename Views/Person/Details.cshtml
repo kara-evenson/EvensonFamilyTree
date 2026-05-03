@@ -10,6 +10,13 @@
     <strong>Name:</strong> @Model.Prefix @Model.FirstName @Model.LastName @Model.Suffix
 </div>
 
+@if (!string.IsNullOrEmpty(Model.ImagePath))
+{
+    <div class="mb-3">
+        <img src="@Model.ImagePath" alt="Ancestor image" style="max-width: 300px; height: auto;" class="img-thumbnail" />
+    </div>
+}
+
 <div class="mb-3">
     <strong>Gender:</strong> @Model.Gender
 </div>

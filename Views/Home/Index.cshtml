@@ -1,8 +1,90 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Dictionary<int, List<EvensonFamilyTreeAppsDev.Models.Person>>
+
+@{
+    ViewData["Title"] = "Home";
+    var partnerships = ViewBag.Partnerships as List<EvensonFamilyTreeAppsDev.Models.Partnership>;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (!User.Identity?.IsAuthenticated ?? true)
+{
+    <div class="text-center mt-5">
+        <h1>Welcome to Evenson Family Tree</h1>
+        <p class="lead">Log in or register to build and view your family tree.</p>
+
+        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">Login</a>
+        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-secondary">Register</a>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>My Family Tree</h1>
+
+        <a asp-controller="Person" asp-action="Create" class="btn btn-primary">
+            Add Ancestor
+        </a>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <p>No ancestors found yet.</p>
+
+        <a asp-controller="Person" asp-action="Create" class="btn btn-primary">
+            Add Your First Ancestor
+        </a>
+    }
+    else
+    {
+        @foreach (var generation in Model)
+        {
+
+            <div class="generation-row mb-5">
+                @{
+                    var renderedPersonIds = new HashSet<int>();
+                    var generationPeople = generation.Value;
+                }
+
+                @foreach (var person in generationPeople)
+                {
+                    if (renderedPersonIds.Contains(person.Id))
+                    {
+                        continue;
+                    }
+
+                    var partnership = partnerships?
+                        .FirstOrDefault(p =>
+                            (p.Person1Id == person.Id || p.Person2Id == person.Id) &&
+                            generationPeople.Any(gp => gp.Id == p.Person1Id) &&
+                            generationPeople.Any(gp => gp.Id == p.Person2Id));
+
+                    if (partnership != null)
+                    {
+                        var partner = partnership.Person1Id == person.Id
+                            ? partnership.Person2
+                            : partnership.Person1;
+
+                        renderedPersonIds.Add(person.Id);
+                        renderedPersonIds.Add(partner.Id);
+
+                        <div class="couple-card">
+                            @await Html.PartialAsync("_PersonTreeCard", person)
+
+                            <div class="partnership-link">
+                                <span>@partnership.RelationshipType?.Name</span>
+                                <div class="heart">♥</div>
+                            </div>
+
+                            @await Html.PartialAsync("_PersonTreeCard", partner)
+                        </div>
+                    }
+                    else
+                    {
+                        renderedPersonIds.Add(person.Id);
+
+                        @await Html.PartialAsync("_PersonTreeCard", person)
+                    }
+                }
+            </div>
+        }
+    }
+}

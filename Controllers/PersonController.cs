@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 
 namespace EvensonFamilyTreeAppsDev.Controllers
 {
@@ -12,10 +13,12 @@ namespace EvensonFamilyTreeAppsDev.Controllers
     public class PersonController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PersonController(ApplicationDbContext context)
+        public PersonController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Person
@@ -26,7 +29,8 @@ namespace EvensonFamilyTreeAppsDev.Controllers
             var people = await _context.People
                 .Include(p => p.FamilyTree)
                 .Where(p => p.FamilyTree != null && p.FamilyTree.OwnerId == userId)
-                .OrderBy(p => p.LastName)
+                .OrderBy(p => p.BirthDate)
+                .ThenBy(p => p.LastName)
                 .ThenBy(p => p.FirstName)
                 .ToListAsync();
 
@@ -104,7 +108,7 @@ namespace EvensonFamilyTreeAppsDev.Controllers
         // POST: Person/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Person person)
+        public async Task<IActionResult> Create(Person person, IFormFile? imageFile)
         {
             var familyTree = await GetCurrentUserFamilyTreeAsync();
 
@@ -132,12 +136,14 @@ namespace EvensonFamilyTreeAppsDev.Controllers
 
             if (ModelState.IsValid)
             {
+                person.ImagePath = await SaveImageAsync(imageFile);
+
                 _context.People.Add(person);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            await PopulateParentDropDowns (person.Parent1Id, person.Parent2Id);
+            await PopulateParentDropDowns(person.Parent1Id, person.Parent2Id);
 
             return View(person);
         }
@@ -172,7 +178,7 @@ namespace EvensonFamilyTreeAppsDev.Controllers
         // POST: Person/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Person person)
+        public async Task<IActionResult> Edit(int id, Person person, IFormFile? imageFile)
         {
             if (id != person.Id)
             {
@@ -228,6 +234,11 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 existingPerson.FamilyTreeId = person.FamilyTreeId;
                 existingPerson.Parent1Id = person.Parent1Id;
                 existingPerson.Parent2Id = person.Parent2Id;
+
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    existingPerson.ImagePath = await SaveImageAsync(imageFile);
+                }
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -390,6 +401,32 @@ namespace EvensonFamilyTreeAppsDev.Controllers
                 .AnyAsync(av => av.FamilyTreeId == familyTreeId && av.UserId == userId);
 
             return isAuthorizedViewer;
+        }
+
+        //image
+        private async Task<string?> SaveImageAsync(IFormFile? imageFile)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+            {
+                return null;
+            }
+
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "ancestors");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream);
+            }
+
+            return $"/images/ancestors/{uniqueFileName}";
         }
 
 

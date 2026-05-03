@@ -31,6 +31,8 @@ namespace EvensonFamilyTreeAppsDev.Models
         public int? Parent2Id { get; set; }
         public Person? Parent2 { get; set; }
 
+        public string? ImagePath { get; set; }
+
         public ICollection<Person> ChildrenFromParent1 { get; set; } = new List<Person>();
         public ICollection<Person> ChildrenFromParent2 { get; set; } = new List<Person>();
 

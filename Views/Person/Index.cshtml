@@ -1,20 +1,62 @@
 ﻿@model IEnumerable<EvensonFamilyTreeAppsDev.Models.Person>
-<h2>People</h2>
-<a asp-action="Create">Create New</a>
-<table>
-    <tr>
-        <th>Name</th>
-        <th></th>
-    </tr>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>@item.FirstName @item.LastName</td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-    }
-</table>
 
+@{
+    ViewData["Title"] = "Ancestors";
+}
+
+<h1>Ancestors</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add Ancestor</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p>No ancestors found.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var person in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(person.ImagePath))
+                    {
+                        <img src="@person.ImagePath"
+                             class="card-img-top"
+                             alt="@person.FirstName @person.LastName"
+                             style="height: 240px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="d-flex align-items-center justify-content-center"
+                             style="height: 240px; background-color: #afbbf2;">
+                            <span class="display-4">
+                                @person.FirstName?.FirstOrDefault()@person.LastName?.FirstOrDefault()
+                            </span>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
+                        </h5>
+
+                        <p class="card-text">
+                            <strong>Birth:</strong> @person.BirthDate?.ToString("MM/dd/yyyy")<br />
+                            <strong>Birth Place:</strong> @person.BirthPlace<br />
+                            <strong>Gender:</strong> @person.Gender
+                        </p>
+                    </div>
+
+                    <div class="card-footer d-flex gap-2">
+                        <a asp-action="Details" asp-route-id="@person.Id" class="btn btn-sm btn-primary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@person.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@person.Id" class="btn btn-sm btn-danger">Delete</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

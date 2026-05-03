@@ -7,10 +7,22 @@
 
 <h1>Edit Ancestor</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="FamilyTreeId" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <div class="mb-3">
+            <img src="@Model.ImagePath" alt="Ancestor image" style="max-width: 250px; height: auto;" class="img-thumbnail" />
+        </div>
+    }
+
+    <div class="mb-3">
+        <label for="imageFile" class="form-label">Ancestor Image</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+    </div>
 
     <div class="mb-3">
         <label asp-for="Prefix" class="form-label"></label>

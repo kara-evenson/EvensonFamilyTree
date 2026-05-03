@@ -1,10 +1,15 @@
 ﻿@model EvensonFamilyTreeAppsDev.Models.Person
 <h1>Create Ancestor</h1>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" enctype="multipart/form-data">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-        <div class="mb-3">
+    <div class="mb-3">
+        <label for="imageFile" class="form-label">Ancestor Image</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+    </div>
+
+    <div class="mb-3">
         <label asp-for="Prefix" class="form-label"></label>
         <input asp-for="Prefix" class="form-control" />
         <span asp-validation-for="Prefix" class="text-danger"></span>

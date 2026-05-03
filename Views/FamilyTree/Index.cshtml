@@ -69,7 +69,6 @@ else
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Gender</th>
                                 <th>Birth Date</th>
                                 <th>Birth Place</th>
                             </tr>
@@ -83,7 +82,6 @@ else
                                             @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
                                         </a>
                                     </td>
-                                    <td>@person.Gender</td>
                                     <td>@person.BirthDate?.ToString("MM/dd/yyyy")</td>
                                     <td>@person.BirthPlace</td>
                                 </tr>
@@ -130,7 +128,6 @@ else
                         <thead>
                             <tr>
                                 <th>Name</th>
-                                <th>Gender</th>
                                 <th>Birth Date</th>
                                 <th>Birth Place</th>
                             </tr>
@@ -144,7 +141,6 @@ else
                                             @($"{person.Prefix} {person.FirstName} {person.LastName} {person.Suffix}".Replace("  ", " ").Trim())
                                         </a>
                                     </td>
-                                    <td>@person.Gender</td>
                                     <td>@person.BirthDate?.ToString("MM/dd/yyyy")</td>
                                     <td>@person.BirthPlace</td>
                                 </tr>

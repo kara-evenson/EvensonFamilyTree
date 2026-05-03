@@ -1,0 +1,33 @@
+﻿@model EvensonFamilyTreeAppsDev.Models.Person
+
+<div class="person-card">
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" class="ancestor-img" />
+    }
+    else
+    {
+        <div class="ancestor-placeholder">
+            @Model.FirstName?.FirstOrDefault()@Model.LastName?.FirstOrDefault()
+        </div>
+    }
+
+    <h5>@Model.FirstName @Model.LastName</h5>
+
+    <small>
+        @Model.BirthDate?.ToString("yyyy")
+        @if (Model.DeathDate != null)
+        {
+            <span> - @Model.DeathDate?.ToString("yyyy")</span>
+        }
+    </small>
+
+    <div class="mt-2">
+        <a asp-controller="Person"
+               asp-action="Details"
+               asp-route-id="@Model.Id"
+               class="btn btn-sm btn-primary">
+            Details
+        </a>
+    </div>
+</div>
